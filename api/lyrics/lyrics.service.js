@@ -1,35 +1,24 @@
-import { Musixmatch } from '@flytri/lyrics-finder'
 import Genius from 'genius-lyrics'
-import dotenv from 'dotenv'
-dotenv.config()
+
 
 export const lyricsService = {
-    getLyrics
+	getLyrics
 }
-
-async function getLyrics(query) {
-    try {
-        console.log('Trying Musixmatch Api')
-        const { lyrics } = await Musixmatch(query)
-        if (!lyrics) throw error
-        return lyrics
-    } catch (error) {
-        console.error(error)
-        return getLyricsFromGenius(query)
-    }
-}
-
-async function getLyricsFromGenius(query) {
-    const geniusApiKey = process.env.GENIUS_API_KEY
-    const Client = new Genius.Client(geniusApiKey)
-
-    try {
-        console.log('Musixmatch failed, trying from Genius')
-        const res = await Client.songs.search(query)
-        const lyricsFromGenius = await res[0].lyrics()
-        return lyricsFromGenius
-
-    } catch (error) {
-        console.error(error)
-    }
+// getLyrics()
+async function getLyrics(term = '', artist = '') {
+	const geniusApiKey = process.env.GENIUS_API_KEY
+	const Client = new Genius.Client(geniusApiKey)
+	try {
+		const searches = await Client.songs.search(term)
+		// console.log('Search', searches)
+		
+		var songs = searches.filter(song => song.artist.name === artist)
+		console.log('songs', songs)
+		songs = songs.filter(song => song.title === term)
+		// console.log('songs', songs)
+		const lyrics = await songs[0].lyrics()
+		return lyrics
+	} catch (error) {
+		console.error(error)
+	}
 }

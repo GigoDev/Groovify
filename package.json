@@ -13,7 +13,6 @@
     "author": "Me",
     "license": "ISC",
     "dependencies": {
-        "@flytri/lyrics-finder": "^1.0.7",
         "bcrypt": "^5.0.0",
         "cookie-parser": "^1.4.6",
         "cors": "^2.8.5",
