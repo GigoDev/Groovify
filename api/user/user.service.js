@@ -58,7 +58,6 @@ async function getByUsername(username) {
 	try {
 		const collection = await dbService.getCollection('user')
 		const user = await collection.findOne({ username })
-        console.log('from user service' ,user)
 		return user
 	} catch (err) {
 		logger.error(`while finding user by username: ${username}`, err)
@@ -104,7 +103,6 @@ async function add(user) {
 			imgUrl: user.imgUrl,
 			isAdmin: user.isAdmin,
 		}
-        console.log('guy!!!!' , userToAdd)
 		const collection = await dbService.getCollection('user')
 		await collection.insertOne(userToAdd)
 		return userToAdd

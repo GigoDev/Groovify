@@ -5,6 +5,7 @@ import { makeId } from '../../services/util.service.js'
 import { dbService } from '../../services/db.service.js'
 import { asyncLocalStorage } from '../../services/als.service.js'
 
+
 const PAGE_SIZE = 3
 
 export const stationService = {
@@ -19,16 +20,11 @@ export const stationService = {
 
 async function query(filterBy = { txt: '' }) {
 	try {
-        // const criteria = _buildCriteria(filterBy)
-        // const sort = _buildSort(filterBy)
+		const criteria = _buildCriteria()
+		// const sort = _buildSort(filterBy)
 
 		const collection = await dbService.getCollection('station')
-		// var stationCursor = await collection.find(criteria, { sort })
-		var stationCursor = await collection.find()
-
-		if (filterBy.pageIdx !== undefined) {
-			stationCursor.skip(filterBy.pageIdx * PAGE_SIZE).limit(PAGE_SIZE)
-		}
+		var stationCursor = await collection.find(criteria)
 
 		const stations = stationCursor.toArray()
 		console.log(stations)
@@ -41,7 +37,7 @@ async function query(filterBy = { txt: '' }) {
 
 async function getById(stationId) {
 	try {
-        const criteria = { _id: ObjectId.createFromHexString(stationId) }
+		const criteria = { _id: ObjectId.createFromHexString(stationId) }
 
 		const collection = await dbService.getCollection('station')
 		const station = await collection.findOne(criteria)
@@ -54,19 +50,19 @@ async function getById(stationId) {
 }
 
 async function remove(stationId) {
-    const { loggedinUser } = asyncLocalStorage.getStore()
-    const { _id: ownerId, isAdmin } = loggedinUser
+	const { loggedinUser } = asyncLocalStorage.getStore()
+	const { _id: ownerId, isAdmin } = loggedinUser
 
 	try {
-        const criteria = { 
-            _id: ObjectId.createFromHexString(stationId), 
-        }
-        if(!isAdmin) criteria['owner._id'] = ownerId
-        
+		const criteria = {
+			_id: ObjectId.createFromHexString(stationId),
+		}
+		if (!isAdmin) criteria['owner._id'] = ownerId
+
 		const collection = await dbService.getCollection('station')
 		const res = await collection.deleteOne(criteria)
 
-        if(res.deletedCount === 0) throw('Not your station')
+		if (res.deletedCount === 0) throw ('Not your station')
 		return stationId
 	} catch (err) {
 		logger.error(`cannot remove station ${stationId}`, err)
@@ -87,10 +83,10 @@ async function add(station) {
 }
 
 async function update(station) {
-    const stationToSave = station
+	const stationToSave = { name: station.name, description: station.description, imgs: station.imgs, tracks: station.tracks }
 
-    try {
-        const criteria = { _id: ObjectId.createFromHexString(station._id) }
+	try {
+		const criteria = { _id: ObjectId.createFromHexString(station._id) }
 
 		const collection = await dbService.getCollection('station')
 		await collection.updateOne(criteria, { $set: stationToSave })
@@ -104,9 +100,9 @@ async function update(station) {
 
 async function addStationMsg(stationId, msg) {
 	try {
-        const criteria = { _id: ObjectId.createFromHexString(stationId) }
-        msg.id = makeId()
-        
+		const criteria = { _id: ObjectId.createFromHexString(stationId) }
+		msg.id = makeId()
+
 		const collection = await dbService.getCollection('station')
 		await collection.updateOne(criteria, { $push: { msgs: msg } })
 
@@ -119,11 +115,11 @@ async function addStationMsg(stationId, msg) {
 
 async function removeStationMsg(stationId, msgId) {
 	try {
-        const criteria = { _id: ObjectId.createFromHexString(stationId) }
+		const criteria = { _id: ObjectId.createFromHexString(stationId) }
 
 		const collection = await dbService.getCollection('station')
-		await collection.updateOne(criteria, { $pull: { msgs: { id: msgId }}})
-        
+		await collection.updateOne(criteria, { $pull: { msgs: { id: msgId } } })
+
 		return msgId
 	} catch (err) {
 		logger.error(`cannot add station msg ${stationId}`, err)
@@ -131,16 +127,21 @@ async function removeStationMsg(stationId, msgId) {
 	}
 }
 
-function _buildCriteria(filterBy) {
-    const criteria = {
-        vendor: { $regex: filterBy.txt, $options: 'i' },
-        speed: { $gte: filterBy.minSpeed },
-    }
+function _buildCriteria() {
+	const { loggedinUser } = asyncLocalStorage.getStore()
 
-    return criteria
+	const criteria = {
+		$or: [
+			{ "owner._id": loggedinUser._id },  // Match documents where owner._id matches logged-in user's ID
+			{ owner: null }       // Match documents where the owner field is explicitly set to null
+		]
+
+	}
+
+	return criteria
 }
 
 function _buildSort(filterBy) {
-    if(!filterBy.sortField) return {}
-    return { [filterBy.sortField]: filterBy.sortDir }
+	if (!filterBy.sortField) return {}
+	return { [filterBy.sortField]: filterBy.sortDir }
 }
