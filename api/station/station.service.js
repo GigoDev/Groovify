@@ -18,9 +18,9 @@ export const stationService = {
 	removeStationMsg,
 }
 
-async function query(filterBy = { txt: '' }) {
+async function query(filterBy = { spotifyId: '' }) {
 	try {
-		const criteria = _buildCriteria()
+		const criteria = _buildCriteria(filterBy)
 		// const sort = _buildSort(filterBy)
 
 		const collection = await dbService.getCollection('station')
@@ -128,15 +128,17 @@ async function removeStationMsg(stationId, msgId) {
 	}
 }
 
-function _buildCriteria() {
+function _buildCriteria(filterBy) {
 	const { loggedinUser } = asyncLocalStorage.getStore()
-
+	const {spotifyId} = filterBy
+	
 	const criteria = {
 		$or: [
 			{ "owner._id": loggedinUser._id },  // Match documents where owner._id matches logged-in user's ID
 			{ owner: null }       // Match documents where the owner field is explicitly set to null
-		]
-
+		],
+		...(spotifyId && { spotifyId: spotifyId }) // Conditionally include spotifyId
+		
 	}
 
 	return criteria

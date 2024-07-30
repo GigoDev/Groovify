@@ -2,8 +2,10 @@ import { logger } from '../../services/logger.service.js'
 import { stationService } from './station.service.js'
 
 export async function getStations(req, res) {
+	const filterBy = {
+		spotifyId: req.query.spotifyId || ''}
 	try {
-		const stations = await stationService.query()
+		const stations = await stationService.query(filterBy)
 		res.json(stations)
 	} catch (err) {
 		logger.error('Failed to get stations', err)
@@ -39,10 +41,10 @@ export async function updateStation(req, res) {
 	const { loggedinUser, body: station } = req
 	const { _id: userId, isAdmin } = loggedinUser
 
-	if (!isAdmin && station.owner._id !== userId) {
-		res.status(403).send('Not your station...')
-		return
-	}
+	// if (!isAdmin && station.owner._id !== userId) {
+	// 	res.status(403).send('Not your station...')
+	// 	return
+	// }
 	
 	try {
 		const updatedStation = await stationService.update(station)
