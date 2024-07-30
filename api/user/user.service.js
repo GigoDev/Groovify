@@ -82,7 +82,6 @@ async function update(user) {
         // peek only updatable properties
         const userToSave = {
             _id: ObjectId.createFromHexString(user._id), // needed for the returnd obj
-            fullname: user.fullname,
         }
         const collection = await dbService.getCollection('user')
         await collection.updateOne({ _id: userToSave._id }, { $set: userToSave })
@@ -99,7 +98,6 @@ async function add(user) {
 		const userToAdd = {
 			username: user.username,
 			password: user.password,
-			fullname: user.fullname,
 			imgUrl: user.imgUrl,
 			isAdmin: user.isAdmin,
 		}
@@ -119,9 +117,6 @@ function _buildCriteria(filterBy) {
 		criteria.$or = [
 			{
 				username: txtCriteria,
-			},
-			{
-				fullname: txtCriteria,
 			},
 		]
 	}

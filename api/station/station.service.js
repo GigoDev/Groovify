@@ -84,6 +84,7 @@ async function add(station) {
 
 async function update(station) {
 	const stationToSave = { name: station.name, description: station.description, imgs: station.imgs, tracks: station.tracks }
+	if (station.followBy) stationToSave.followBy = station.followBy
 
 	try {
 		const criteria = { _id: ObjectId.createFromHexString(station._id) }
