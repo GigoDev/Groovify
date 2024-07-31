@@ -83,7 +83,7 @@ async function add(station) {
 }
 
 async function update(station) {
-	const stationToSave = { name: station.name, description: station.description, imgs: station.imgs, tracks: station.tracks }
+	const stationToSave = { name: station.name, description: station.description, imgs: station.imgs, tracks: station.tracks, owner: station.owner }
 	if (station.followBy) stationToSave.followBy = station.followBy
 
 	try {
@@ -130,15 +130,15 @@ async function removeStationMsg(stationId, msgId) {
 
 function _buildCriteria(filterBy) {
 	const { loggedinUser } = asyncLocalStorage.getStore()
-	const {spotifyId} = filterBy
-	
+	const { spotifyId } = filterBy
+
 	const criteria = {
 		$or: [
 			{ "owner._id": loggedinUser._id },  // Match documents where owner._id matches logged-in user's ID
 			{ owner: null }       // Match documents where the owner field is explicitly set to null
 		],
 		...(spotifyId && { spotifyId: spotifyId }) // Conditionally include spotifyId
-		
+
 	}
 
 	return criteria
