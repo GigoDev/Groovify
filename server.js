@@ -8,6 +8,8 @@ import { authRoutes } from './api/auth/auth.routes.js'
 import { userRoutes } from './api/user/user.routes.js'
 import { reviewRoutes } from './api/review/review.routes.js'
 import { stationRoutes } from './api/station/station.routes.js'
+import { lyricsRoutes } from './api/lyrics/lyrics.routes.js'
+import { logger } from './services/logger.service.js'
 import { setupSocketAPI } from './services/socket.service.js'
 
 import { setupAsyncLocalStorage } from './middlewares/setupAls.middleware.js'
@@ -38,6 +40,7 @@ app.use('/api/auth', authRoutes)
 app.use('/api/user', userRoutes)
 app.use('/api/review', reviewRoutes)
 app.use('/api/station', stationRoutes)
+app.use('/api/lyrics', lyricsRoutes)
 
 setupSocketAPI(server)
 
@@ -50,7 +53,6 @@ app.get('/**', (req, res) => {
     res.sendFile(path.resolve('public/index.html'))
 })
 
-import { logger } from './services/logger.service.js'
 const port = process.env.PORT || 3030
 
 server.listen(port, () => {
