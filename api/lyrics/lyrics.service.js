@@ -11,12 +11,28 @@ async function getLyrics(term = '', artist = '') {
 	try {
 		const searches = await Client.songs.search(term)
 		// console.log('Search', searches)
-		
-		var songs = searches.filter(song => song.artist.name === artist)
-		console.log('songs', songs)
-		songs = songs.filter(song => song.title === term)
+
+		let matchingSongs = searches.filter(song => 
+            song.artist.name.toLowerCase().includes(artist.toLowerCase()) ||
+            song.title.toLowerCase().includes(term.toLowerCase())
+        )
+
+        
+        matchingSongs = matchingSongs.map(song => {
+            let score = 0
+            if (song.artist.name.toLowerCase() === artist.toLowerCase()) score += 2
+            else if (song.artist.name.toLowerCase().includes(artist.toLowerCase())) score += 1
+            if (song.title.toLowerCase() === term.toLowerCase()) score += 2
+            else if (song.title.toLowerCase().includes(term.toLowerCase())) score += 1
+            return { song, score }
+        })
+
+        
+        matchingSongs.sort((a, b) => b.score - a.score)
 		// console.log('songs', songs)
-		const lyrics = await songs[0].lyrics()
+
+		const bestMatch = matchingSongs[0].song
+		const lyrics = await bestMatch.lyrics()
 		return lyrics
 	} catch (error) {
 		console.error(error)
