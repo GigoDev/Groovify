@@ -15,15 +15,15 @@ async function getLyrics(term = '', artist = '') {
 		let matchingSongs = searches.filter(song => 
             song.artist.name.toLowerCase().includes(artist.toLowerCase()) ||
             song.title.toLowerCase().includes(term.toLowerCase())
-        ).map(song => {
+        )
+
+        
+        matchingSongs = matchingSongs.map(song => {
             let score = 0
-            // Increase score for exact matches
-            if (song.artist.name.toLowerCase() === artist.toLowerCase()) score += 3
-            else if (song.artist.name.toLowerCase().includes(artist.toLowerCase())) score += 2
-            
-            if (song.title.toLowerCase() === term.toLowerCase()) score += 3
-            else if (song.title.toLowerCase().includes(term.toLowerCase())) score += 2
-            
+            if (song.artist.name.toLowerCase() === artist.toLowerCase()) score += 2
+            else if (song.artist.name.toLowerCase().includes(artist.toLowerCase())) score += 1
+            if (song.title.toLowerCase() === term.toLowerCase()) score += 2
+            else if (song.title.toLowerCase().includes(term.toLowerCase())) score += 1
             return { song, score }
         })
 
