@@ -27,7 +27,7 @@ async function query(filterBy = { spotifyId: '' }) {
 		var stationCursor = await collection.find(criteria)
 
 		const stations = stationCursor.toArray()
-		console.log(stations)
+		// console.log(stations)
 		return stations
 	} catch (err) {
 		logger.error('cannot find stations', err)
