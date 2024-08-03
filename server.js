@@ -9,6 +9,7 @@ import { userRoutes } from './api/user/user.routes.js'
 import { reviewRoutes } from './api/review/review.routes.js'
 import { stationRoutes } from './api/station/station.routes.js'
 import { lyricsRoutes } from './api/lyrics/lyrics.routes.js'
+import { spotifyRoutes } from "./api/spotify/spotify.routes.js";
 import { logger } from './services/logger.service.js'
 import { setupSocketAPI } from './services/socket.service.js'
 
@@ -41,6 +42,7 @@ app.use('/api/user', userRoutes)
 app.use('/api/review', reviewRoutes)
 app.use('/api/station', stationRoutes)
 app.use('/api/lyrics', lyricsRoutes)
+app.use('/api/spotify', spotifyRoutes)
 
 setupSocketAPI(server)
 
