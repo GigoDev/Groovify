@@ -14,6 +14,7 @@ import { logger } from './services/logger.service.js'
 import { setupSocketAPI } from './services/socket.service.js'
 
 import { setupAsyncLocalStorage } from './middlewares/setupAls.middleware.js'
+import { youtubeRoutes } from './api/youtube/youtube.routes.js'
 
 const app = express()
 const server = http.createServer(app)
@@ -43,6 +44,7 @@ app.use('/api/review', reviewRoutes)
 app.use('/api/station', stationRoutes)
 app.use('/api/lyrics', lyricsRoutes)
 app.use('/api/spotify', spotifyRoutes)
+app.use('/api/youtube', youtubeRoutes)
 
 setupSocketAPI(server)
 
