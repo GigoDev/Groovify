@@ -1,10 +1,10 @@
 import axios from "axios"
+const YT_KEY = process.env.YT_KEY
 
 export const youtubeService = {
     getId,
 }
 
-const YT_KEY = 'AIzaSyCilqLL-8Izy6Fx59c3SKshxQkbcSnuG5I'
 
 async function getId(trackName) {
     try {
