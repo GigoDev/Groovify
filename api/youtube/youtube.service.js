@@ -10,9 +10,14 @@ async function getId(trackName) {
     try {
         const url = _getUrl(trackName)
         const res = await axios.get(url)
-        return res.data.items[0].id.videoId
+        if (res.data.items && res.data.items.length > 0) {
+            return res.data.items[0].id.videoId
+        } else {
+            throw new Error('No video found')
+        }
     } catch (error) {
-        console.log(error)
+        console.log('Error fetching YouTube ID:', error)
+        throw error 
     }
 }
 
@@ -21,5 +26,5 @@ function _getUrl(trackName) {
         `part=snippet&` +
         `videoEmbeddable=true&` +
         `type=video&` +
-        `key=${YT_KEY}&q=${trackName}`
+        `key=${YT_KEY}&q=${encodeURIComponent(trackName)}`
 }
