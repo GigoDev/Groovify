@@ -16,8 +16,8 @@ async function getId(trackName) {
             throw new Error('No video found')
         }
     } catch (error) {
-        console.log('Error fetching YouTube ID:', error)
-        throw error 
+        console.error('Error fetching YouTube ID:', error.response ? error.response.data : error.message)
+        throw error
     }
 }
 
@@ -26,5 +26,5 @@ function _getUrl(trackName) {
         `part=snippet&` +
         `videoEmbeddable=true&` +
         `type=video&` +
-        `key=${YT_KEY}&q=${encodeURIComponent(trackName)}`
+        `key=${YT_KEY}&q=${trackName}`
 }
